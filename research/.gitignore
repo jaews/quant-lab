@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+results/strategy_leaderboard.csv
+results/walk_forward_results.csv

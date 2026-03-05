@@ -1,0 +1,17 @@
+default:
+  root_runs: results/runs
+  symbol: BTCUSDT
+  timeframe: 1h
+  initial_capital: 10000
+  fees: 0.0004
+  slippage: 0.0002
+synthetic:
+  n_steps: 2500
+  seed: 42
+  trend_strength: 0.2
+  volatility: 0.35
+  regime_duration: 250
+  grid_spacing: 0.01
+walk_forward:
+  train_days: 730
+  test_days: 182
