@@ -1,0 +1,10 @@
+{
+  "strategy_name": "hybrid",
+  "symbol": "LINKUSDT",
+  "timeframe": "1h",
+  "start_date": "2026-01-23 04:00:00",
+  "end_date": "2026-03-05 19:00:00",
+  "capital_initial": 10000.0,
+  "fees": 0.0004,
+  "slippage": 0.0002
+}

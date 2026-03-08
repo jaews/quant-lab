@@ -101,7 +101,17 @@ def main() -> None:
     sort_map = {"calmar": "Calmar", "sharpe": "Sharpe", "cagr": "CAGR", "maxdd": "MaxDD"}
     asc = args.sort == "maxdd"
     ranked = board.sort_values(sort_map[args.sort], ascending=asc).head(args.top)
-    print(ranked.to_string(index=False))
+    if board.empty:
+        print(
+            "No valid runs found under results/runs. "
+            "Generate synthetic data with `python -m experiments.synthetic_generator` "
+            "or fix run folder files (equity.csv, trades.csv, meta.json)."
+        )
+    print("Saved results/strategy_leaderboard.csv")
+    if ranked.empty:
+        print("Leaderboard is empty.")
+    else:
+        print(ranked.to_string(index=False))
 
     if args.walk_forward:
         market = simulate_market(SyntheticConfig())

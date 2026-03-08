@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Streamlit Dashboard",
+      "type": "python",
+      "request": "launch",
+      "module": "streamlit",
+      "args": [
+        "run",
+        "dashboard/app.py"
+      ],
+      "cwd": "${workspaceFolder}/research",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Run Experiment Runner",
+      "type": "python",
+      "request": "launch",
+      "module": "experiments.sweep",
+      "cwd": "${workspaceFolder}/research",
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

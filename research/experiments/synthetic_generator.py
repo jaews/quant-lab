@@ -19,7 +19,7 @@ from strategies.trend_following import generate_signal as trend_signal
 @dataclass
 class SyntheticConfig:
     n_steps: int = 2500
-    freq: str = "H"
+    freq: str = "h"
     initial_price: float = 20000.0
     initial_capital: float = 10000.0
     trend_strength: float = 0.2

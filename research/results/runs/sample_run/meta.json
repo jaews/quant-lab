@@ -1,0 +1,13 @@
+{
+  "strategy_name": "sample_strategy",
+  "symbol": "BTCUSDT",
+  "timeframe": "1h",
+  "execution_model": "next_open",
+  "start_date": "2026-01-01",
+  "end_date": "2026-01-01",
+  "capital_initial": 10000,
+  "fees": 0.0005,
+  "slippage": 0.0002,
+  "leverage": 1.0,
+  "periods_per_year": 8760
+}

@@ -1,85 +1,147 @@
-# Crypto Quant Research Engine
+# Continuous Crypto Quant Research Lab
 
-A local, modular Python research platform for crypto strategy evaluation, comparison, parameter experiments, walk-forward validation, and visualization.
+Python 3.10+ local research engine for:
 
-## Installation
+- Binance data ingestion (`BTCUSDT`, `ETHUSDT`, `SOLUSDT`, `LINKUSDT`)
+- strategy backtest refresh (`grid`, `trend`, `hybrid`)
+- automatic leaderboard updates
+- Streamlit dashboard monitoring
+
+## Running Quant Research Lab
+
+Clone repository:
 
 ```bash
+git clone <repo_url>
+cd <repo_name>
 cd research
+```
+
+Create environment:
+
+```bash
+python -m venv .venv
+```
+
+Windows:
+
+```powershell
+.venv\Scripts\activate
+```
+
+Mac/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
-## Generate synthetic runs
+Run pipeline manually:
 
 ```bash
-python -m experiments.synthetic_generator
+python main.py run-pipeline
 ```
 
-This creates sample run folders under `results/runs/` for:
-- grid
-- trend-following
-- hybrid
-
-Each run contains:
-- `equity.csv`
-- `trades.csv`
-- `meta.json`
-
-## Run leaderboard + experiments
+Run scheduler (daily at 02:00):
 
 ```bash
-python -m experiments.sweep --root results/runs --top 20 --sort calmar
+python pipeline/scheduler.py
 ```
 
-Run with walk-forward test:
-
-```bash
-python -m experiments.sweep --root results/runs --walk-forward --train-days 730 --test-days 182
-```
-
-Outputs:
-- `results/strategy_leaderboard.csv`
-- `results/walk_forward_results.csv`
-
-## Launch dashboard
+Run dashboard:
 
 ```bash
 streamlit run dashboard/app.py
 ```
 
-Features:
-- strategy selector
-- metrics panel
-- equity curve
-- drawdown chart
-- return distribution histogram
-- cross-strategy comparison table
-- metadata filters (`symbol`, `timeframe`, `leverage`, `strategy`)
+Then open:
 
-## Metadata schema (`meta.json`)
+http://localhost:8501
 
-```json
-{
-  "strategy_name": "grid",
-  "symbol": "BTCUSDT",
-  "timeframe": "1h",
-  "start_date": "2020-01-01",
-  "end_date": "2024-01-01",
-  "parameters": {
-    "grid_levels": 40,
-    "range_width": 0.2,
-    "leverage": 2
-  },
-  "fees": 0.0004,
-  "slippage": 0.0002,
-  "capital_initial": 10000
-}
-```
-
-## Testing
+## CLI Commands
 
 ```bash
-pytest
+python main.py update-data
+python main.py run-backtests
+python main.py update-leaderboard
+python main.py run-pipeline
 ```
 
-If optional runtime deps are missing in a constrained environment, tests are skipped via `pytest.importorskip` rather than failing during collection.
+## Cache and Outputs
+
+Market cache:
+
+- `data/cache/BTCUSDT_1h.csv`
+- `data/cache/ETHUSDT_4h.csv`
+- `data/cache/SOLUSDT_1d.csv`
+
+Backtest runs:
+
+- `results/runs/<strategy>_run_<symbol>_<timeframe>_<timestamp>/`
+- each run includes `equity.csv`, `trades.csv`, `meta.json`
+
+Leaderboard:
+
+- `results/strategy_leaderboard.csv`
+- columns: `Strategy, Symbol, Timeframe, CAGR, Sharpe, Sortino, Calmar, MaxDD`
+- sorted by `Calmar`, then `Sharpe`, then `CAGR` (descending)
+
+## Makefile
+
+```bash
+make install
+make run-pipeline
+make run-scheduler
+make run-dashboard
+make generate-synthetic
+```
+
+## Reliability Behavior
+
+- Binance/API failures are retried with backoff.
+- Missing or invalid data files are logged and skipped without crashing the full pipeline.
+- If `results/runs` is empty or run files are invalid, the dashboard shows explicit warnings/errors.
+
+## Validation and Tests
+
+Run validation across all runs:
+
+```bash
+python -m analysis.validate_run --root results/runs --all
+```
+
+Run strict validation for a single run:
+
+```bash
+python -m analysis.validate_run --run results/runs/sample_run --strict
+```
+
+Run tests:
+
+```bash
+pytest -q
+```
+
+Optional metric cross-check (dev-only, requires quantstats):
+
+```bash
+python -m analysis.metrics_crosscheck --run results/runs/sample_run
+```
+
+Common validation failures and fixes:
+
+- `Missing equity.csv`:
+  - re-export the run so `equity.csv` contains at least `timestamp,equity`.
+- `timestamps are not strictly increasing`:
+  - sort by timestamp before saving and remove duplicates (`--dedupe` can auto-fix with warning).
+- `equity reconstruction mismatch`:
+  - verify return and equity update logic (compounding consistency).
+- `trade timestamps fall outside equity time range`:
+  - align trade event timestamps to bar timeline.
+- `strict mode failed on warnings`:
+  - add missing metadata (`strategy_name`, `symbol`, `timeframe`, `execution_model`) and trade fee/side fields.

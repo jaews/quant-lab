@@ -1,0 +1,16 @@
+{
+  "strategy_name": "trend",
+  "symbol": "BTCUSDT",
+  "timeframe": "1h",
+  "start_date": "2025-01-01",
+  "end_date": "2026-01-31",
+  "parameters": {
+    "fast": 20,
+    "slow": 80,
+    "leverage": 1.5
+  },
+  "fees": 0.0004,
+  "slippage": 0.0002,
+  "capital_initial": 10000.0,
+  "leverage": 1.5
+}
